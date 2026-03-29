@@ -11,7 +11,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path='D:/key/blog-writer.env.env')
+load_dotenv()
 
 BASE_DIR = Path(__file__).parent.parent.parent
 CONFIG_PATH = BASE_DIR / "config" / "engine.json"

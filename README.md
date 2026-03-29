@@ -142,6 +142,19 @@ scripts\setup.bat
 - 한글 폰트 다운로드 (Noto Sans KR)
 - Windows 작업 스케줄러 등록
 
+### macOS 빠른 시작
+
+macOS에서는 `scripts\setup.bat` 대신 아래를 사용하세요.
+
+```bash
+bash scripts/setup-mac.sh
+```
+
+주의사항:
+- `pip install -e .` 는 현재 저장소 구조상 필수가 아니며, 직접 실행 방식(`python bots/scheduler.py`, `python -m dashboard.backend.server`)을 권장합니다.
+- `.env`는 프로젝트 루트의 `.env`를 기본으로 읽도록 동작합니다.
+- Windows 전용 단계(작업 스케줄러 등록, `blog.cmd`)는 macOS에서 실행하지 않습니다.
+
 ### 3단계: API 키 설정
 
 `.env.example`을 참고해 API 키를 입력합니다.
@@ -156,7 +169,7 @@ TELEGRAM_CHAT_ID=
 ```
 
 보안 팁: .env 파일을 프로젝트 폴더 외부(예: D:\key\)에 두고
-`load_dotenv(dotenv_path='D:/key/blog-writer.env')` 형태로 참조하면
+`load_dotenv()` 형태로 참조하면
 git에 절대 포함되지 않습니다. 이 프로젝트는 이 방식을 기본으로 사용합니다.
 
 ### 4단계: Google OAuth 토큰 발급

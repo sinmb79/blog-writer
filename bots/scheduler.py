@@ -12,6 +12,10 @@ from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
 from runtime_guard import ensure_project_runtime
 
 ensure_project_runtime(
@@ -27,9 +31,9 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 import anthropic
 import re
 
-load_dotenv(dotenv_path='D:/key/blog-writer.env.env')
+load_dotenv()
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = BASE_DIR / 'config'
 DATA_DIR = BASE_DIR / 'data'
 LOG_DIR = BASE_DIR / 'logs'
