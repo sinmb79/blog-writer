@@ -195,9 +195,9 @@ class SmartVideoRouter:
         elif engine == 'ffmpeg_slides':
             result = self._generate_ffmpeg(prompt_text, output_path)
         else:
-            # veo3, seedance2, runway, etc. — stub: not yet implemented
-            logger.warning(f"{engine} 구현 미완성 — 폴백 트리거")
-            result = ''
+            # veo3, seedance2, runway — V3.1 구현 예정, ffmpeg_slides로 자동 폴백
+            logger.warning(f"{engine} 구현 미완성 — ffmpeg_slides로 자동 폴백")
+            result = self._generate_ffmpeg(prompt_text, output_path)
 
         if result:
             # Update cost tracking

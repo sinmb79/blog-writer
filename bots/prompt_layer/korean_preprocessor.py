@@ -204,6 +204,39 @@ PRONUNCIATION_MAP = {
     'PPT': '피피티',
     'PDF': '피디에프',
     'ZIP': '집',
+    # AI/LLM extended
+    'Gemini': '제미나이',
+    'Grok': '그록',
+    'Copilot': '코파일럿',
+    'Perplexity': '퍼플렉시티',
+    'Midjourney': '미드저니',
+    'Stable Diffusion': '스테이블 디퓨전',
+    'DALL-E': '달리',
+    'Sora': '소라',
+    'Kling': '클링',
+    'Runway': '런웨이',
+    # Dev tools / infra
+    'Git': '깃',
+    'Linux': '리눅스',
+    'Ubuntu': '우분투',
+    'Windows': '윈도우',
+    'macOS': '맥오에스',
+    'Terminal': '터미널',
+    'CI/CD': '씨아이씨디',
+    'API Gateway': '에이피아이 게이트웨이',
+    # Finance extended
+    'PER': '주가수익비율',
+    'PBR': '주가순자산비율',
+    'EPS': '주당순이익',
+    'ROE': '자기자본이익률',
+    'CAGR': '연평균성장률',
+    # E-commerce / marketing
+    'CPC': '클릭당비용',
+    'CPM': '천회노출당비용',
+    'CTA': '씨티에이',
+    'CTR': '클릭률',
+    'ROAS': '광고수익률',
+    'LTV': '고객생애가치',
 }
 
 # Pause durations in milliseconds by sentence type

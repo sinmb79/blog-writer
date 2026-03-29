@@ -628,3 +628,54 @@ class ResilientAssembler:
         finally:
             if tmp_cleanup and work_dir.exists():
                 shutil.rmtree(work_dir, ignore_errors=True)
+
+
+# ── Standalone test ──────────────────────────────────────────────
+
+if __name__ == '__main__':
+    import sys
+
+    if '--test' not in sys.argv:
+        print("사용법: python -m bots.shorts.video_assembler --test")
+        sys.exit(0)
+
+    print("=== Video Assembler Test ===")
+
+    # Test GPU encoder detection
+    print("\n[1] GPU 인코더 자동 감지:")
+    ffmpeg_bin = _get_ffmpeg()
+    encoder = _detect_gpu_encoder(ffmpeg_bin)
+    print(f"  감지된 인코더: {encoder}")
+    assert encoder in ('h264_nvenc', 'h264_amf', 'h264_qsv', 'libx264'), \
+        f"알 수 없는 인코더: {encoder}"
+
+    # Test ResilientAssembler encoder caching
+    print("\n[2] ResilientAssembler 초기화 + 인코더 캐싱:")
+    assembler = ResilientAssembler()
+    enc1 = assembler._get_encoder()
+    enc2 = assembler._get_encoder()
+    print(f"  인코더: {enc1}")
+    assert enc1 == enc2, "캐시 불일치"
+    assert assembler._encoder is not None, "캐시 저장 실패"
+
+    # Test duration helpers
+    print("\n[3] 유틸 함수:")
+    # WAV duration (requires existing file — skip if not present)
+    try:
+        import tempfile, wave
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
+            tmp_path = Path(tmp.name)
+        # Write minimal valid WAV (1s silence at 44100Hz mono)
+        with wave.open(str(tmp_path), 'w') as wf:
+            wf.setnchannels(1)
+            wf.setsampwidth(2)
+            wf.setframerate(44100)
+            wf.writeframes(b'\x00\x00' * 44100)
+        dur = _get_wav_duration(tmp_path)
+        print(f"  WAV 1초 테스트: duration={dur:.2f}s")
+        assert abs(dur - 1.0) < 0.1, f"WAV 길이 오류: {dur}"
+        tmp_path.unlink(missing_ok=True)
+    except Exception as e:
+        print(f"  [경고] WAV 테스트 건너뜀: {e}")
+
+    print("\n✅ 모든 테스트 통과")

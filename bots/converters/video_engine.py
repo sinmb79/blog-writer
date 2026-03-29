@@ -6,7 +6,6 @@
 지원 엔진:
   - FFmpegSlidesEngine: 기존 shorts_converter.py 파이프라인 (슬라이드 + TTS + ffmpeg)
   - SeedanceEngine: Seedance 2.0 API (AI 영상 생성)
-  - SoraEngine: OpenAI Sora (미지원 → ffmpeg_slides 폴백)
   - RunwayEngine: Runway Gen-3 API
   - VeoEngine: Google Veo 3.1 (미지원 → ffmpeg_slides 폴백)
 """
@@ -588,22 +587,6 @@ class SeedanceEngine(VideoEngine):
         return self._fallback(scenes, output_path, **kwargs)
 
 
-# ─── SoraEngine ────────────────────────────────────────
-
-class SoraEngine(VideoEngine):
-    """
-    OpenAI Sora 영상 생성 엔진.
-    현재 API 공개 접근 불가 — ffmpeg_slides로 폴백.
-    """
-
-    def __init__(self, cfg: dict):
-        self.cfg = cfg
-
-    def generate(self, scenes: list, output_path: str, **kwargs) -> str:
-        logger.warning("Sora API 미지원. ffmpeg_slides로 폴백.")
-        return FFmpegSlidesEngine(self.cfg).generate(scenes, output_path, **kwargs)
-
-
 # ─── RunwayEngine ──────────────────────────────────────
 
 class RunwayEngine(VideoEngine):
@@ -774,7 +757,6 @@ def get_engine(video_cfg: dict) -> VideoEngine:
     engine_map = {
         'ffmpeg_slides': FFmpegSlidesEngine,
         'seedance': SeedanceEngine,
-        'sora': SoraEngine,
         'runway': RunwayEngine,
         'veo': VeoEngine,
     }

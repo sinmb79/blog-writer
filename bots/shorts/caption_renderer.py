@@ -375,4 +375,58 @@ def render_captions(
     ass_content = header + '\n'.join(events) + '\n'
     ass_path.write_text(ass_content, encoding='utf-8-sig')  # BOM for Windows compatibility
     logger.info(f'ASS 자막 생성: {ass_path.name} ({len(timestamps)}단어, {len(lines)}라인)')
+
+
+# ── Standalone test ──────────────────────────────────────────────
+
+if __name__ == '__main__':
+    import sys
+    import tempfile
+    from pathlib import Path
+
+    if '--test' not in sys.argv:
+        print("사용법: python -m bots.shorts.caption_renderer --test")
+        sys.exit(0)
+
+    print("=== Caption Renderer Test ===")
+
+    # Test smart_line_break
+    test_texts = [
+        ("AI를 활용한 자동화 방법입니다", 18),
+        ("단 3가지만 알면 됩니다", 12),
+    ]
+    print("\n[1] smart_line_break:")
+    for text, max_c in test_texts:
+        lines = smart_line_break(text, max_c)
+        print(f"  입력: {text!r}")
+        print(f"  결과: {lines}")
+
+    # Test template lookup
+    print("\n[2] get_template_for_corner:")
+    for corner in ['쉬운세상', '숨은보물', '팩트체크', '없는코너']:
+        tpl = get_template_for_corner(corner)
+        print(f"  {corner}: font_size={tpl.get('font_size')}, animation={tpl.get('animation')}")
+
+    # Test render_captions with dummy timestamps
+    print("\n[3] render_captions (dry-run):")
+    sample_timestamps = [
+        {'word': '이거', 'start': 0.0, 'end': 0.3},
+        {'word': '모르면', 'start': 0.4, 'end': 0.8},
+        {'word': '손해입니다', 'start': 0.9, 'end': 1.5},
+    ]
+    sample_script = {'hook': '이거 모르면 손해입니다'}
+    with tempfile.TemporaryDirectory() as tmpdir:
+        out = Path(tmpdir) / 'test.ass'
+        render_captions(
+            timestamps=sample_timestamps,
+            script=sample_script,
+            output_path=out,
+            corner='쉬운세상',
+        )
+        exists = out.exists()
+        size = out.stat().st_size if exists else 0
+        print(f"  ASS 파일 생성: {exists}, 크기: {size}bytes")
+        assert exists and size > 0, "ASS 파일 생성 실패"
+
+    print("\n✅ 모든 테스트 통과")
     return ass_path

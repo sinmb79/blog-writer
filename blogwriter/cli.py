@@ -373,6 +373,11 @@ def init():
     else:
         services['claude_web'] = False
 
+    if click.confirm("   Google Gemini Pro(Web) 사용 중이신가요?", default=False):
+        services['gemini_web'] = True
+    else:
+        services['gemini_web'] = False
+
     profile['services'] = services
 
     # Step 5: API Keys

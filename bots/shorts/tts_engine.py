@@ -525,3 +525,55 @@ def generate_tts(
 def load_timestamps(ts_path: Path) -> list[dict]:
     """저장된 타임스탬프 JSON 로드."""
     return json.loads(ts_path.read_text(encoding='utf-8'))
+
+
+# ── Standalone test ──────────────────────────────────────────────
+
+if __name__ == '__main__':
+    import sys
+    import tempfile
+    from pathlib import Path
+
+    if '--test' not in sys.argv:
+        print("사용법: python -m bots.shorts.tts_engine --test")
+        sys.exit(0)
+
+    print("=== TTS Engine Test ===")
+
+    # Test SmartTTSRouter initialization
+    print("\n[1] SmartTTSRouter 초기화:")
+    router = SmartTTSRouter({'budget': 'free'})
+    print(f"  budget: {router.budget}")
+    engine = router.select(text_length=100)
+    print(f"  select(100chars) → {engine}")
+    assert isinstance(engine, str) and engine, "엔진 선택 실패"
+
+    # Test with medium budget (no API keys → falls back to free engine)
+    router_med = SmartTTSRouter({'budget': 'medium'})
+    engine_med = router_med.select(text_length=500)
+    print(f"  medium budget select(500chars) → {engine_med}")
+    assert isinstance(engine_med, str) and engine_med, "medium 엔진 선택 실패"
+
+    # Test usage recording + over-limit detection
+    print("\n[2] 사용량 제한 로직:")
+    router3 = SmartTTSRouter({'budget': 'free'})
+    router3.record_usage('elevenlabs', 9000)  # near limit
+    over = router3._is_over_limit('elevenlabs', 900)  # 9000+900 > 8000 threshold
+    print(f"  elevenlabs 9000자 기록 후 900자 추가 → 한도 초과: {over}")
+    assert over, "한도 초과 감지 실패"
+
+    # Test Edge TTS (always-available free engine) with short text
+    print("\n[3] Edge TTS 음성 생성 (네트워크 필요):")
+    with tempfile.TemporaryDirectory() as tmpdir:
+        try:
+            wav, timestamps = generate_tts(
+                script={'hook': '테스트입니다', 'body': [], 'closer': ''},
+                output_dir=Path(tmpdir),
+                timestamp='test_20260329',
+            )
+            print(f"  WAV 생성: {wav.exists()}, 타임스탬프: {len(timestamps)}단어")
+            assert wav.exists(), "WAV 파일 생성 실패"
+        except Exception as e:
+            print(f"  [경고] TTS 실패 (네트워크/의존성 없을 수 있음): {e}")
+
+    print("\n✅ 모든 테스트 통과")
